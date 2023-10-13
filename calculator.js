@@ -1,66 +1,88 @@
-// add calculator output as variable
+// ******************* Variables Declaration ******************* //
 
-let number1 = number
-
-let number2 = number
-
-// TO DO: add a store function /var/obj to store number1 and number2
-
-function displayResult(result) {
-    let displayResult = document.getElementById('displayResult');
-    displayResult.innerText = result;
-  }
-
-
-
-function addition(number1, number2) {
-return number1 + number2;
-}
-
-function subtraction(number1, number2){
-    return number1 - number2;
-}
-
-function multiplication(number1, number2){
-    return number1 * number2;
-}
-
-function division(number1, number2){
-    return number1 / number2;
-}
-
-
-let operators = document.getElementsByClassName('calculator__key--operator');
-
-
-
-// below might be deleted/ adjusted in the future
-
-Array.from(operators).forEach(operator => {
-    operator.addEventListener('click', (event) => {
-        let clickedOperator = event.target.innerText;
-        if (operations[clickedOperator]) {
-            // Here, you can call the operate function or do whatever you need
-          /* 
-          result = operate(clickedOperator, num1, num2);
-           displayResult(result); 
-           */
-        }
-    });
-});
-
+let firstOperand;
+let secondOperand;
+let currentInput = '';
 const operations = {
     '+': addition,
     '-': subtraction,
     '*': multiplication,
-    '/': division
+    '/': division,
+    'reset': reset,
+    'decimal': decimal
 };
+let calculatorContainer = document.querySelector('.calculator');
 
-function operate(operator, number1, number2) {
-    if (operations[operator]) {
-        return operations[operator](number1, number2);
-    }
-    return "Invalid operator";
+// ******************* Utility Functions ******************* //
+
+function displayResult(result) {
+    let displayOutput = document.querySelector('.calculator__output');
+    displayOutput.innerText = result;
 }
 
-// ***************************************************
+function addition(a, b) {
+    return a + b;
+}
+
+function subtraction(a, b) {
+    return a - b;
+}
+
+function multiplication(a, b) {
+    return a * b;
+}
+
+function division(a, b) {
+    return a / b;
+}
+
+function reset() {
+    firstOperand = '';
+    secondOperand = '';
+}
+
+function decimal(value) {
+}
+
+function operate(operator, a, b) {
+    if (operations[operator]) {
+        return operations[operator](a, b);
+    }
+    return 'Invalid operator';
+}
+
+// ******************* Event Handlers ******************* //
+
+function handleNumberKey(number) {
+    currentInput += number;
+    displayResult(currentInput);
+}
+
+function handleOperatorKey(operator) {
+    if (!firstOperand) {
+        firstOperand = parseFloat(currentInput);
+    } else {
+        secondOperand = parseFloat(currentInput);
+        let result = operate(operator, firstOperand, secondOperand);
+        displayResult(result);
+        firstOperand = result;  // Storing the result for the next operation
+        secondOperand = null;
+    }
+    currentInput = '';
+}
+
+// ******************* Event Listeners ******************* //
+
+calculatorContainer.addEventListener('click', (event) => {
+    if (event.target.matches('.calculator__key')) {
+        handleNumberKey(event.target.value);
+    } else if (event.target.matches('.calculator__key--operator')) {
+        handleOperatorKey(event.target.value);
+    }
+    // ... handle other key types similarly
+});
+
+// *************************************************** //
+
+
+// TO DO! work on decimal and reset and get operator keys to work properly
